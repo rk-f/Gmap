@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Google Map</title>
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+        
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Alert</h4>
+            </div>
+            <div class="modal-body">
+              <p>The Map can be viewed only in Potrait mode</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+</body>
+   
+
+<style>
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+#map {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    position: relative;
+    top: 0;
+}
+
+
+</style>
+
+<script >
+jQuery(document).ready(function($){
+    initMap();
+});
+var marker_count =0;
+var marker1 ={lat:null,long:null};
+var marker2 ={lat:null,long:null};
+
+function initMap() {
+  var bng = {lat: 12.972442, lng: 77.580643};
+  var map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: bng});
+    map.addListener('click', function(e) {
+        placeMarker(e.latLng, map);
+  });
+}
+
+
+function placeMarker(latLng,map) {
+    console.log(latLng.lat());
+    marker_count = marker_count +1;
+    if(marker_count > 2){
+        marker_count = 0;
+        initMap();
+    }
+    var marker = new google.maps.Marker({
+    position: latLng,
+    map: map
+  });
+  map.panTo(latLng);
+
+  if (marker_count == 1){
+    marker1.lat = latLng.lat();
+    marker1.lng = latLng.lng();
+   }
+   else{
+    marker2.lat = latLng.lat();
+    marker2.lng = latLng.lng();
+    coordinates = [{lat:marker1.lat,lng:marker1.lng},{lat:marker2.lat,lng:marker2.lng}];
+    drawdistance(coordinates,map);
+   }
+
+}
+
+function drawdistance(coordinates,map){
+    const flightPath = new google.maps.Polyline({
+    path: coordinates,
+    geodesic: true,
+    strokeColor: "#FF0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 4
+  });
+  flightPath.setMap(map);
+
+}
+var mql = window.matchMedia("(orientation: portrait)");
+
+
+mql.addListener(function(m) {
+	if(m.matches) {
+	}
+	else {
+		$("#myModal").modal();
+	}
+});
+
+</script>
+<script defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrHkKWj4vlzOJw_6TuDow0v7IY_VzICKw">
+</script>
+
+</html> 
